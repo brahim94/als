@@ -1,0 +1,199 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record id="view_claim_extend_res_partner_info_form" model="ir.ui.view">
+        <field name="name">res.partner.claim.info.form.extend</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="priority" eval="51"/>
+        <field name="arch" type="xml">
+            <field name="company_type" position="after">
+                <br/>
+                <field name="partner_type" widget="radio" options="{'horizontal': true}"/>
+            </field>
+            <field name="type" position="after">
+                <field name="code"/>
+            </field>
+            <field name="vat" position="after">
+                <field name="cin" attrs="{'invisible': [('partner_type', '!=', 'client')]}"/>
+                <field name="birthdate" attrs="{'invisible': [('partner_type', '!=', 'client')]}"/>
+                <field name="gender" widget="radio" options="{'horizontal': true}" attrs="{'invisible': [('partner_type', '!=', 'client')]}"/>
+            </field>
+            <xpath expr="//page[@name='sales_purchases']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page[@name='accounting']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page[@name='internal_notes']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page[1]" position="attributes">
+                <attribute name="attrs">{'invisible': [('partner_type', '!=', 'pos')]}</attribute>
+            </xpath>
+            <xpath expr="//page[@name='geo_location']" position="attributes">
+                <attribute name="attrs">{'invisible': [('partner_type', 'not in', ['pos','station'])]}</attribute>
+            </xpath>
+            <xpath expr="//page[@name='sales_purchases']" position="after">
+                <page name="legal_representative" string="Legal representative" attrs="{'invisible': [('partner_type', '!=', 'client')]}">
+                    <group>
+                        <group>
+                            <field name="res_name"/>
+                            <field name="res_cin"/>
+                            <field name="res_phone"/>
+                        </group>
+                        <group></group>
+                    </group>
+                </page>
+                <page name="institute" string="Institute" attrs="{'invisible': [('partner_type', '!=', 'client')]}">
+                    <group>
+                        <group>
+                            <field name="inst_name"/>
+                            <field name="inst_cne"/>
+                            <field name="inst_address"/>
+                        </group>
+                        <group></group>
+                    </group>
+                </page>
+            </xpath>
+            <xpath expr="//group[1]" position="attributes">
+                <attribute name="attrs">{'invisible': [('partner_type', 'in', ['station','line'])]}</attribute>
+            </xpath>
+            <xpath expr="//group[1]" position="after">
+                <group attrs="{'invisible': [('partner_type', '!=', 'station')]}">
+                    <group>
+                        <field name="code"/>
+                    </group>
+                </group>
+            </xpath>
+            <xpath expr="//group[1]" position="after">
+                <group attrs="{'invisible': [('partner_type', '!=', 'line')]}">
+                    <group>
+                        <field name="code"/>
+                        <field name="rate"/>
+                        <field name="frequency"/>
+                    </group>
+                    <group>
+                        <field name="mileage"/>
+                        <field name="travel_time"/>
+                        <field name="number_of_buses"/>
+                    </group>
+                </group>
+            </xpath>
+
+            <xpath expr="//page[@name='sales_purchases']" position="after">
+                <page name="station_rec" string="Stations" attrs="{'invisible': [('partner_type', '!=', 'line')]}">
+                    <field name="station_ids" widget="section_and_note_one2many">
+                        <tree string="Station Lines" editable="bottom" >
+                            <field name="sequence_ref" width="0.2" attrs="{'invisible': [('sequence_ref', '=', 0)]}"/>
+                            <field name="station_id"/>
+                            <field name="terminus" width="0.5"/>
+                            <field name="correspondence_ids" widget="many2many_tags" options="{'no_create': True}" string="Correspendances"/>
+                        </tree>
+                    </field>
+                </page>
+                <page name="depatures" string="Depatures" attrs="{'invisible': [('partner_type', '!=', 'line')]}">
+                    <field name="departure_ids" widget="section_and_note_one2many">
+                        <tree string="Station Lines" editable="bottom" >
+                            <field name="period"/>
+                            <field name="timetable"/>
+                            <field name="compaute_station_ids" invisible="1"/>
+                            <field name="station_id" domain="[('id','in', compaute_station_ids)]"/>
+                            <field name="first_departure" widget="float_time" width="0.5"/>
+                            <field name="last_departure" widget="float_time" width="0.5"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+    
+        </field>
+    </record>
+
+    <record id="sale_order_form_lines" model="ir.ui.view">
+        <field name="name">sale.order.form.lines</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="priority" eval="20"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page/field[@name='order_line']/tree/field[@name='tax_id']" position="after">
+                <field name="partner_line_ids" widget="many2many_tags" options="{'no_create': True}" string="Lines"/>
+            </xpath>
+            <xpath expr="//page[@name='optional_products']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page[@name='other_information']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="res_parnter_client" model="ir.actions.act_window">
+        <field name="name">Clients</field>
+        <field name="res_model">res.partner</field>
+        <field name="context">{'partner_type': 'client'}</field>
+        <field name="domain">[('partner_type', '=', 'client')]</field>
+        <field name="view_mode">kanban,tree,form,activity</field>
+    </record>
+
+    <menuitem
+        id="menu_res_partner_clinet"
+        sequence="5"
+        parent="crm.crm_menu_sales"
+        action="res_parnter_client"/>
+
+    <record id="res_parnter_client" model="ir.actions.act_window">
+        <field name="name">Clients</field>
+        <field name="res_model">res.partner</field>
+        <field name="context">{'partner_type': 'client'}</field>
+        <field name="domain">[('partner_type', '=', 'client')]</field>
+        <field name="view_mode">kanban,tree,form,activity</field>
+    </record>
+
+    <menuitem
+        id="menu_res_partner_clinet"
+        sequence="5"
+        parent="crm.crm_menu_sales"
+        action="res_parnter_client"/>
+
+    <record id="res_parnter_pos" model="ir.actions.act_window">
+        <field name="name">Point of Sales</field>
+        <field name="res_model">res.partner</field>
+        <field name="context">{'partner_type': 'pos'}</field>
+        <field name="domain">[('partner_type', '=', 'pos')]</field>
+        <field name="view_mode">kanban,tree,form,activity</field>
+    </record>
+
+    <menuitem
+        id="menu_res_partner_pos"
+        sequence="6"
+        parent="crm.crm_menu_sales"
+        action="res_parnter_pos"/>
+
+    <record id="res_parnter_line" model="ir.actions.act_window">
+        <field name="name">Lines</field>
+        <field name="res_model">res.partner</field>
+        <field name="context">{'partner_type': 'line'}</field>
+        <field name="domain">[('partner_type', '=', 'line')]</field>
+        <field name="view_mode">kanban,tree,form,activity</field>
+    </record>
+
+    <menuitem
+        id="menu_res_partner_line"
+        sequence="7"
+        parent="crm.crm_menu_sales"
+        action="res_parnter_line"/>
+
+    <record id="res_parnter_station" model="ir.actions.act_window">
+        <field name="name">Stations</field>
+        <field name="res_model">res.partner</field>
+        <field name="context">{'partner_type': 'station'}</field>
+        <field name="domain">[('partner_type', '=', 'station')]</field>
+        <field name="view_mode">kanban,tree,form,activity</field>
+    </record>
+
+    <menuitem
+        id="menu_res_partner_station"
+        sequence="8"
+        parent="crm.crm_menu_sales"
+        action="res_parnter_station"/>
+
+</odoo>

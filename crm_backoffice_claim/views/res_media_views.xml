@@ -1,0 +1,85 @@
+<?xml version="1.0" ?>
+<odoo>
+    <menuitem
+        id="menu_config_medias"
+        name="Médias"
+        parent="crm.crm_menu_root"
+        sequence="21"
+    />
+
+    <record id="crm_res_media_form" model="ir.ui.view">
+        <field name="name">crm.res.media.form</field>
+        <field name="model">res.media</field>
+        <field name="arch" type="xml">
+            <form string="Media">
+                <sheet>
+                    <!-- <widget name="web_ribbon" title="Active" attrs="{'invisible': [('active', '=', False)]}" /> -->
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <group>
+                        <field name="media_type"/>
+                        <field name="active" invisible="1"/>
+                        <field name="title"/>
+                        <field name="description"/>
+                        <field name="image_res" widget="image" invisible="context.get('media_type') == 'faq'"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="crm_res_media_tree" model="ir.ui.view">
+        <field name="name">crm.res.media.tree</field>
+        <field name="model">res.media</field>
+        <field name="arch" type="xml">
+            <tree string="Media">
+                <field name="media_type"/>
+                <field name="title"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="crm_res_media_sliders_action" model="ir.actions.act_window">
+        <field name="name">Sliders</field>
+        <field name="res_model">res.media</field>
+        <field name="context">{'media_type': 'slider'}</field>
+        <field name="domain">[('media_type', '=', 'slider')]</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        action="crm_res_media_sliders_action"
+        sequence="1"
+        id="menu_crm_res_media_sliders"
+        parent="menu_config_medias"
+    />
+
+    <record id="crm_res_media_news_action" model="ir.actions.act_window">
+        <field name="name">News</field>
+        <field name="res_model">res.media</field>
+        <field name="context">{'media_type': 'news'}</field>
+        <field name="domain">[('media_type', '=', 'news')]</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        action="crm_res_media_news_action"
+        sequence="2"
+        id="menu_crm_res_media_news"
+        parent="menu_config_medias"
+    />
+
+    <record id="crm_res_media_faq_action" model="ir.actions.act_window">
+        <field name="name">FAQ</field>
+        <field name="res_model">res.media</field>
+        <field name="context">{'media_type': 'faq'}</field>
+        <field name="domain">[('media_type', '=', 'faq')]</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        action="crm_res_media_faq_action"
+        sequence="3"
+        id="menu_crm_res_media_faq"
+        parent="menu_config_medias"
+    />
+</odoo>

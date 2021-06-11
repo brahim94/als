@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_res_media,access_res_media,model_res_media,base.group_user,1,1,1,1
+access_res_station,access_res_station,model_res_station,base.group_user,1,1,1,1
+access_res_departure,access_res_departure,model_res_departure,base.group_user,1,1,1,1
+access_res_timetable,access_res_timetable,model_res_timetable,base.group_user,1,1,1,1
+access_res_period,access_res_period,model_res_period,base.group_user,1,1,1,1
