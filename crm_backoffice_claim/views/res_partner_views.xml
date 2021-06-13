@@ -7,8 +7,8 @@
         <field name="priority" eval="51"/>
         <field name="arch" type="xml">
             <field name="company_type" position="after">
-                <br/>
-                <field name="partner_type" widget="radio" options="{'horizontal': true}"/>
+                <!-- <br/> -->
+                <field name="partner_type" invisible="1" widget="radio" options="{'horizontal': true}"/>
             </field>
             <field name="type" position="after">
                 <field name="code"/>
@@ -76,6 +76,7 @@
                         <field name="mileage"/>
                         <field name="travel_time"/>
                         <field name="number_of_buses"/>
+                        <field name="compaute_station_ids" invisible="1"/>
                     </group>
                 </group>
             </xpath>
@@ -96,8 +97,8 @@
                         <tree string="Station Lines" editable="bottom" >
                             <field name="period"/>
                             <field name="timetable"/>
-                            <field name="compaute_station_ids" invisible="1"/>
-                            <field name="station_id" domain="[('id','in', compaute_station_ids)]"/>
+                            
+                            <field name="station_id" domain="[('id','in', parent.compaute_station_ids)]"/>
                             <field name="first_departure" widget="float_time" width="0.5"/>
                             <field name="last_departure" widget="float_time" width="0.5"/>
                         </tree>

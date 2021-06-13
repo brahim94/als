@@ -11,6 +11,18 @@ class ResMedia(models.Model):
     title = fields.Char(string='Titre')
     description = fields.Text('Description')
     image_res = fields.Image('Image', copy=False, attachment=True, max_width=1024, max_height=1024)
+    state = fields.Selection([
+        ('active', 'Active'),
+        ('archived', 'Inactive'),
+        ], string='Status', readonly=True, copy=False, index=True, tracking=3, default='active', compute="_comute_state")
+
+    @api.depends('active')
+    def _comute_state(self):
+        for record in self:
+            if record.active == True:
+                record.state = 'active'
+            if record.active == False:
+                record.state = 'archived'
 
 class ResStation(models.Model):
     _name = "res.station"
@@ -42,23 +54,12 @@ class ResPeriod(models.Model):
 class ResStation(models.Model):
     _name = "res.departure"
 
-    period = fields.Many2one('res.timetable', string="Period")
+    period = fields.Many2one('res.period', string="Period")
     timetable = fields.Many2one('res.timetable', string="Timetable")
     station_id = fields.Many2one('res.partner', string="Station")
     parnter_id = fields.Many2one('res.partner')
     first_departure = fields.Float('First departure')
     last_departure = fields.Float('Last departure')
-    compaute_station_ids = fields.Many2many('res.partner', compute="_compute_station_record")
-
-    @api.depends('parnter_id.station_ids')
-    def _compute_station_record(self):
-        for record in self:
-            compaute_station_ids = []
-            for st in record.parnter_id.station_ids:
-                if st.terminus:
-                    compaute_station_ids.append(st.station_id.id)
-            record.compaute_station_ids = compaute_station_ids
-
 
 class ResPartner(models.Model):
     _inherit = "res.partner"
@@ -88,6 +89,7 @@ class ResPartner(models.Model):
 
     station_ids = fields.One2many('res.station','parnter_id', string="Station")
     departure_ids = fields.One2many('res.departure','parnter_id', string="Station")
+    compaute_station_ids = fields.Many2many('res.partner', compute="_compute_station_record")
 
     @api.model
     def default_get(self, default_fields):
@@ -102,3 +104,12 @@ class ResPartner(models.Model):
         if self.env.context.get('partner_type') == 'station':
             values.update({'partner_type': 'station'})
         return values
+
+    @api.depends('station_ids','departure_ids')
+    def _compute_station_record(self):
+        for record in self:
+            compaute_station_ids = []
+            for st in record.station_ids:
+                if st.terminus:
+                    compaute_station_ids.append(st.station_id.id)
+            record.compaute_station_ids = compaute_station_ids

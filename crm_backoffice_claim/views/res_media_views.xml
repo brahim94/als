@@ -12,6 +12,9 @@
         <field name="model">res.media</field>
         <field name="arch" type="xml">
             <form string="Media">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="active,archived"/>
+                </header>
                 <sheet>
                     <!-- <widget name="web_ribbon" title="Active" attrs="{'invisible': [('active', '=', False)]}" /> -->
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
