@@ -1,0 +1,173 @@
+<section class="oe_container">
+    <div class="oe_row oe_spaced">
+        <div class="oe_span12">
+            <h2 class="oe_slogan">Authentication</h2>
+            <ul>
+                <li>Login</li>
+                <li>Logout</li>
+            </ul>
+        </div>
+        
+        <div class="oe_span12">
+            <p class="oe_mt32">
+                In order to be able to access any entity an access token needs to generated which serves as session cookies in a regular web language. The token will <strong>be needed</strong> for every subsequent requests. Except for <em>/api/login</em> enpoint that accept <strong>multipart/form-data</strong> as the Content type every other endpoints accept application/json as the 'Content Type'.<br>
+                <strong>Token will give the user access only to models which he have access to.</strong><br>
+                <strong>The period which the token needs to be expired is parametrable and you can modify it.</strong>
+            </p>
+
+        </div>
+        <!-- login -->
+        <div class="oe_span12">
+            <h2 class="oe_slogan">Login (Request access token)</h2>
+        </div>
+	    <div class="oe_span12">
+            <div class="oe_row_img oe_centered">
+                <img class="oe_demo oe_picture" src="request_access_token1.png">
+            </div>
+        </div>
+
+        <p class="oe_mt32">Python request</p>
+
+        <div class="oe_span12">
+            <div class="oe_row_img oe_centered">
+                <img class="oe_demo oe_picture" src="request_token2.png">
+            </div>
+        </div>
+
+        <p class="oe_mt32">
+            To retrive an access token these following parameters needs to be set.<br>
+            <ul>
+                <li>the database name as <strong>db</strong></li>
+                <li>the connecting username as <strong>login</strong></li>
+                <li>the user password as <strong>password</strong></li>
+            </ul>
+            The above request will return a response like below.
+        </p>
+
+        <div class="oe_span12">
+            <div class="oe_row_img oe_centered">
+                <img class="oe_demo oe_picture" src="request_token3.png">
+            </div>
+        </div>
+        <!-- end login -->
+
+
+        <!-- logout -->
+        <div class="oe_span12">
+            <h2 class="oe_slogan">Logout</h2>
+        </div>
+
+        <p class="oe_mt32">
+            To logout of the system the token needs to be destroyed i.e deleted, by doing that the user/application making the request on behalf of the user will have not futher access to Odoo. The token <em>/api/logout</em> listen to both <strong>GET</strong> and <strong>DELETE</strong> requests, GET will fetch the token while delete request will deleted the token.
+        </p>
+        <p>Python request: </p>
+        <div class="oe_span12">
+            <div class="oe_row_img oe_centered">
+                <img class="oe_demo oe_picture" src="logout.png">
+            </div>
+        </div>
+
+        <!-- end logout -->
+
+    </div>
+
+</section>
+
+<section class="oe_container">
+    <div class="oe_row oe_spaced">
+        <div class="oe_span12">
+            <h2 class="oe_slogan">CRUD on model.model: Example: sale.order</h2>
+        </div>
+        <div class="oe_span12">
+            <p>To get or fetch existing sale order</p>
+        </div>
+        <div class="oe_span12">
+            <div class="oe_row_img oe_centered">
+                <img class="oe_demo oe_picture" src="get_sale_order1.png">
+            </div>
+        </div>
+        <div class="oe_span12">
+            <p class="oe_mt32">
+                There is posibilty of applying some record filters in order to get just the specific record.
+                <ul>
+                    <li>limit: This define the total number of record we are expecting</li>
+                    <li>offset: where the query will start from</li>
+                    <li>fields: this is the list of field that we wanted to return, this can be leave empty if we wanted to return all the fields.</li>
+                    <li>domain: domain is like a filter it is always a list of tuples (field, operator, value)</li>
+                </ul>
+                These payload applies to all records in Odoo.<br>
+                We can perform create, update and delete operation on any records using corresponding HTTP request headers.<br>
+                <ul>
+                    <li>GET: For retriving existing records</li>
+                    <li>POST: For creating new records</li>
+                    <li>PATCH: Call an action button on a record</li>
+                    <li>DELETE: To delete a record</li>
+                </ul>
+                All the API of currently installed modules or any module that may be installed has already cattered for dynamically. The API follows this sematic pattern<br>
+                <strong>/api{api route}/modelP{model name}/id{optional id for delete request}</strong> e.g for sale order Get request to <strong>api/sale.order</strong> endpoint will return all the sale order in the system.
+            </p>
+        </div>
+
+        <h3>Get specific element</h3>
+        <ul>
+            <li>Get request</li>
+        </ul>
+        <div class="oe_span12">
+            <div class="oe_row_img oe_centered">
+                <img class="oe_demo oe_picture" src="get2.png">
+            </div>
+        </div>
+        <ul>
+            <li>Response</li>
+        </ul>
+        <div class="oe_span12">
+            <div class="oe_row_img oe_centered">
+                <img class="oe_demo" src="get3.png">
+            </div>
+        </div>
+        <p class="oe_mt32">The reponse with all the fields, but the return fields can specified along side the request, and also, specific records can be specified by sending along the request Odoo domain as json body.</p>
+        <div class="oe_span12">
+            <div class="oe_row_img oe_centered">
+                <img class="oe_demo oe_picture" src="get4.png">
+            </div>
+        </div>
+        <p class="oe_mt32">The above will only return <strong>2</strong> maximum records, id, partner and sale order name, that have an ID in the given list [10,11,12,13,14], the offset can be set also.</p>
+
+
+        <h3>POST request</h3>
+        <div class="oe_span12">
+            <div class="oe_row_img oe_centered">
+                <img class="oe_demo oe_picture" src="post1.png">
+            </div>
+        </div>
+
+        <h3>PUT request</h3>
+        <p class="oe_mt32">Put request is meant for updating fields in a record. e.g updating partner name.</p>
+        <div class="oe_span12">
+            <div class="oe_row_img oe_centered">
+                <img class="oe_demo oe_picture" src="put.png">
+            </div>
+        </div>
+        <p class="oe_mt32">In the above request, we send a json body like this <strong>{"name":"partner name edited"}</strong>, calling the put request updated the res.partrner with id = 15 with new data.</p>
+
+
+        <h3>PATCH request</h3>
+        <p class="oe_mt32">Patch request is meant for calling an action button on a record. example: validating sale order.</p>
+        <div class="oe_span12">
+            <div class="oe_row_img oe_centered">
+                <img class="oe_demo oe_picture" src="patch.png">
+            </div>
+        </div>
+        <p class="oe_mt32">In the above request, we send a json body like this <strong>{"_method":"action_confirm"}</strong> The _method is the action/button name in odoo. This is similar to clicking Confirm Button on sale order with ID <strong>37</strong></p>
+
+
+        <h3>DELETE request</h3>
+        <div class="oe_span12">
+            <div class="oe_row_img oe_centered">
+                <img class="oe_demo oe_picture" src="delete.png">
+            </div>
+        </div>
+        <p class="oe_mt32">We only need to make a delete request to the resource.</p>
+    </div>
+</section>
+
