@@ -80,23 +80,93 @@ class APIController(http.Controller):
                 
                 if model and method:
                     if method == 'get_sliders':
-                        records = request.env[model.model].search([('media_type','=','slider'),('state','=','active')])
+                        records = request.env[model.model].sudo().search([('media_type','=','slider'),('state','=','active')])
                         data = []
                         for record in records:
                             data.append({'title':record.title,'description': record.description,'image_res': record.image_res})
 
                     if method == 'get_news':
-                        records = request.env[model.model].search([('media_type','=','news'),('state','=','active')])
+                        records = request.env[model.model].sudo().search([('media_type','=','news'),('state','=','active')])
                         data = []
                         for record in records:
                             data.append({'title':record.title,'description': record.description,'image_res': record.image_res})
 
                     if method == 'get_faq':
-                        records = request.env[model.model].search([('media_type','=','faq'),('state','=','active')])
+                        records = request.env[model.model].sudo().search([('media_type','=','faq'),('state','=','active')])
                         data = []
                         for record in records:
                             data.append({'title':record.title,'description': record.description})
 
+                    if method == 'get_products':
+                        records = request.env[model.model].sudo().search([])
+                        data = []
+                        for record in records:
+                            data.append({'id':record.id,'description': record.description,'name':record.name,'image_1920': record.image_1920})
+
+                    if method == 'get_pos':
+                        records = request.env[model.model].sudo().search([('partner_type','=','pos'),('state','=','active')])
+                        data = []
+                        for record in records:
+                            data.append({'id':record.id,
+                                        'code': record.code,
+                                        'name':record.name,
+                                        'street': record.street,
+                                        'city':record.city,
+                                        'phone':record.phone,
+                                        'partner_latitude':record.partner_latitude,
+                                        'partner_longitude': record.partner_longitude})
+
+                    if method == 'get_stations':
+                        records = request.env[model.model].sudo().search([('partner_type','=','station'),('state','=','active')])
+                        data = []
+                        for record in records:
+                            data.append({'id':record.id,
+                                        'code': record.code,
+                                        'name':record.name,
+                                        'partner_latitude':record.partner_latitude,
+                                        'partner_longitude': record.partner_longitude})
+
+                    if method == 'get_lines':
+                        records = request.env[model.model].sudo().search([('partner_type','=','line'),('state','=','active')])
+                        data = []
+                        for record in records:
+                            station_list = []
+                            for station_rec in record.station_ids:
+                                station_list.append({'order':station_rec.sequence_ref,
+                                                    'station_id':station_rec.station_id.id,
+                                                    'terminus': station_rec.terminus,
+                                                    'correspondence_ids': station_rec.correspondence_ids.ids})
+                            departure_list = []
+                            for departure in record.departure_ids:
+                                departure_list.append({'period':departure.period.id,
+                                                    'timetable':departure.timetable.id,
+                                                    'station_id': departure.station_id.id,
+                                                    'first_departure': departure.first_departure,
+                                                    'last_departure':departure.last_departure})
+                            data.append({'id':record.id,
+                                        'code': record.code,
+                                        'name':record.name,
+                                        'rate':record.rate,
+                                        'frequency': record.frequency,
+                                        'mileage': record.mileage,
+                                        'travel_time': record.travel_time,
+                                        'nbr_buses': record.number_of_buses,
+                                        'station_ids': station_list,
+                                        'departure_ids': departure_list
+                                        })
+
+                    if method == 'get_claim_types':
+                        records = request.env[model.model].sudo().search([('active','=',True)])
+                        data = []
+                        for record in records:
+                            data.append({'name':record.name})
+
+                    if method == 'get_claim_categories':
+                        records = request.env[model.model].sudo().search([])
+                        data = []
+                        for record in records:
+                            data.append({'name':record.name,'claim_type': record.claim_type})
+                            
                     if data:
                         return valid_response(data)
                     else:
