@@ -90,6 +90,18 @@ class ResPartner(models.Model):
     station_ids = fields.One2many('res.station','parnter_id', string="Station")
     departure_ids = fields.One2many('res.departure','parnter_id', string="Station")
     compaute_station_ids = fields.Many2many('res.partner', compute="_compute_station_record")
+    state = fields.Selection([
+        ('active', 'Active'),
+        ('archived', 'Inactive'),
+        ], string='Status', store=True, copy=False, index=True, tracking=3, default='active', compute="_comute_state")
+
+    @api.depends('active')
+    def _comute_state(self):
+        for record in self:
+            if record.active == True:
+                record.state = 'active'
+            if record.active == False:
+                record.state = 'archived'
 
     @api.model
     def default_get(self, default_fields):

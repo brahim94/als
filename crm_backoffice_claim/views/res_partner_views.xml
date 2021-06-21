@@ -88,7 +88,7 @@
                             <field name="sequence_ref" width="0.2" attrs="{'invisible': [('sequence_ref', '=', 0)]}"/>
                             <field name="station_id"/>
                             <field name="terminus" width="0.5"/>
-                            <field name="correspondence_ids" widget="many2many_tags" options="{'no_create': True}" string="Correspendances"/>
+                            <field name="correspondence_ids" context="{'default_partner_type': 'line'}" widget="many2many_tags" string="Correspendances"/>
                         </tree>
                     </field>
                 </page>
