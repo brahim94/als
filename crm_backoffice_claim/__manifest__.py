@@ -5,12 +5,11 @@
 
 {
     "name": "BackOffice Claims Extends",
-    "version": "13.0.1.0.1",
+    "version": "13.0.1.0.2",
     "category": "Customer Relationship Management",
     'author': "Mordant Business Solutions",
     'website': 'https://www.mordantbs.com',
     'category': 'CRM',
-    'version': '13.0.0.2',
     "summary": "Track your customers/vendors claims and grievances.",
     "depends": ["crm_claim","base_geolocalize","sale_management","crm_claim_type"],
     "data": [
