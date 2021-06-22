@@ -6,6 +6,11 @@
         <field name="inherit_id" ref="base.view_partner_form" />
         <field name="priority" eval="51"/>
         <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="active,archived" attrs="{'invisible': [('partner_type', '=', 'client')]}"/>
+                </header>
+            </xpath>
             <field name="company_type" position="after">
                 <!-- <br/> -->
                 <field name="partner_type" invisible="1" widget="radio" options="{'horizontal': true}"/>
@@ -85,7 +90,7 @@
                 <page name="station_rec" string="Stations" attrs="{'invisible': [('partner_type', '!=', 'line')]}">
                     <field name="station_ids" widget="section_and_note_one2many">
                         <tree string="Station Lines" editable="bottom" >
-                            <field name="sequence_ref" width="0.2" attrs="{'invisible': [('sequence_ref', '=', 0)]}"/>
+                            <field name="order" width="0.2" attrs="{'invisible': [('order', '=', 0)]}" readonly="1" force_save="1"/>
                             <field name="station_id"/>
                             <field name="terminus" width="0.5"/>
                             <field name="correspondence_ids" context="{'default_partner_type': 'line'}" widget="many2many_tags" string="Correspendances"/>

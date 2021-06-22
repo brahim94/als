@@ -40,22 +40,9 @@ def validate_token(func):
     return wrap
 
 
-def cast_value(field_type, value):
-    if field_type in ['char', 'selection', 'text', 'html']:
-        return str(value)
-    elif field_type in ['integer', 'many2one']:
-        return int(value)
-    elif field_type in ['float', 'monetary']:
-        return float(value)
-    elif field_type in ['date', 'datetime']:
-        return value.isoformat()
-    elif field_type == 'boolean':
-        return bool(int(value))
-    else: 
-        return value
-
-_routes = ["/api/<model>", "/api/<model>/<id>", "/api/<model>/<id>/<action>","/api/raw/<model>/<method>"]
-
+# _routes = ["/api/<model>", "/api/<model>/<id>", "/api/<model>/<id>/<action>","/api/raw/<model>/<method>"]
+_routes = ["/api/raw/<model>/<method>"]
+General_Methods = ['get_sliders','get_news','get_faq','get_products','get_pos','get_stations','get_lines','get_claim_types','get_claim_categories','set_claim','set_client','order_card']
 
 class APIController(http.Controller):
     """."""
@@ -77,7 +64,8 @@ class APIController(http.Controller):
                 data = request.env[model.model].search_read(
                     domain=domain, fields=fields, offset=offset, limit=limit, order=order,
                 )
-                
+                if method and method not in General_Methods:
+                    return invalid_response("Invaild Method Found",message='%s Method not Found in API' % method,)
                 if model and method:
                     if method == 'get_sliders':
                         records = request.env[model.model].sudo().search([('media_type','=','slider'),('state','=','active')])
@@ -175,7 +163,6 @@ class APIController(http.Controller):
                 "invalid object model", "The model %s is not available in the registry." % ioc_name,
             )
         except AccessError as e:
-
             return invalid_response("Access error", "Error: %s" % e.name)
 
     @validate_token
@@ -221,25 +208,8 @@ class APIController(http.Controller):
         """
         ioc_name = model
         model = request.env[self._model].search([("model", "=", model)], limit=1)
-        values = {}
-        fields = []
-        if model and not method:
-            try:
-                # changing IDs from string to int.
-                for k, v in payload.items():
-                    field_type = request.env['ir.model.fields'].search([('model_id','=',model.id),('name','=',k)], limit=1).ttype
-                    values[k] = cast_value(field_type, v)
-                    fields.append(k)
-                resource = request.env[model.model].create(values)
-            except Exception as e:
-                request.env.cr.rollback()
-                return invalid_response("params", e)
-            else:
-                data = resource.read(fields)
-                if resource:
-                    return valid_response(data)
-                else:
-                    return valid_response(data)
+        if method and method not in General_Methods:
+            return invalid_response("Invaild Method Found",message='%s Method not Found in API' % method,)
         if model and method:
             try:
                 if method == 'set_client':
@@ -300,101 +270,3 @@ class APIController(http.Controller):
                 request.env.cr.rollback()
                 return invalid_response("params", e)
         return invalid_response("invalid object model", "The model %s is not available in the registry." % ioc_name,)
-
-    @validate_token
-    @http.route(_routes, type="http", auth="none", methods=["PUT"], csrf=False)
-    def put(self, model=None, id=None, **payload):
-        """
-        import requests
-
-        url = "http://localhost:8069/api/res.partner/15"
-
-        payload = {"name":"partner name edited"}
-        headers = {
-            'content-type': "application/x-www-form-urlencoded",
-            'token': "_63e2db121d0ab33a3ea3ddb933249d9291c67c4f"
-            }
-
-        response = requests.request("PUT", url, data=payload, headers=headers)
-
-        print(response.text)
-        """
-        try:
-            _id = int(id)
-        except Exception as e:
-            return invalid_response("invalid object id", "invalid literal %s for id with base " % id)
-        _model = request.env[self._model].sudo().search([("model", "=", model)], limit=1)
-        if not _model:
-            return invalid_response(
-                "invalid object model", "The model %s is not available in the registry." % model, 404,
-            )
-        try:
-            record = request.env[_model.model].sudo().browse(_id)
-            record.write(payload)
-        except Exception as e:
-            request.env.cr.rollback()
-            return invalid_response("exception", e.name)
-        else:
-            return valid_response(record.read())
-
-    @validate_token
-    @http.route(_routes, type="http", auth="none", methods=["DELETE"], csrf=False)
-    def delete(self, model=None, id=None, **payload):
-        """."""
-        try:
-            _id = int(id)
-        except Exception as e:
-            return invalid_response("invalid object id", "invalid literal %s for id with base " % id)
-        try:
-            record = request.env[model].sudo().search([("id", "=", _id)])
-            if record:
-                record.unlink()
-            else:
-                return invalid_response("missing_record", "record object with id %s could not be found" % _id, 404,)
-        except Exception as e:
-            request.env.cr.rollback()
-            return invalid_response("exception", e.name, 503)
-        else:
-            return valid_response("record %s has been successfully deleted" % record.id)
-
-    @validate_token
-    @http.route(_routes, type="http", auth="none", methods=["PATCH"], csrf=False)
-    def patch(self, model=None, id=None, action=None, **payload):
-        """
-        import requests
-
-        url = "http://localhost:8069/api/sale.order/81"
-
-        payload = {"_method":"action_confirm"}
-        headers = {
-            'content-type': "application/x-www-form-urlencoded",
-            'token': "_63e2db121d0ab33a3ea3ddb933249d9291c67c4f"
-            }
-
-        response = requests.request("PATCH", url, data=payload, headers=headers)
-
-        print(response.text)
-        """
-        action = action if action else payload.get('_method')
-        args = []
-
-        try:
-            _id = int(id)
-        except Exception as e:
-            return invalid_response("invalid object id", "invalid literal %s for id with base" % id)
-        try:
-            record = request.env[model].sudo().search([("id", "=", _id)])
-            _callable = action in [method for method in dir(record) if callable(getattr(record, method))]
-            if record and _callable:
-                # action is a dynamic variable.
-                getattr(record, action)(*args) if args else getattr(record, action)() 
-            else:
-                return invalid_response(
-                    "missing_record",
-                    "record object with id %s could not be found or %s object has no method %s" % (_id, model, action),
-                    404,
-                )
-        except Exception as e:
-            return invalid_response("exception", e, 503)
-        else:
-            return valid_response("record %s has been successfully update" % record.id)

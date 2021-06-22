@@ -5,7 +5,7 @@
 
 {
     "name": "BackOffice Claims Extends",
-    "version": "13.0.1.0.2",
+    "version": "13.0.1.0.3",
     "category": "Customer Relationship Management",
     'author': "Mordant Business Solutions",
     'website': 'https://www.mordantbs.com',

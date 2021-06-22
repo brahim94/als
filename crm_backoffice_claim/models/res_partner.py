@@ -31,15 +31,7 @@ class ResStation(models.Model):
     parnter_id = fields.Many2one('res.partner')
     terminus = fields.Boolean(string="Terminus")
     correspondence_ids = fields.Many2many('res.partner',domain="[('partner_type', '=', 'line')]")
-    sequence_ref = fields.Integer('Order', compute="_sequence_ref")
-
-    @api.depends('parnter_id.station_ids')
-    def _sequence_ref(self):
-        for line in self:
-            no = 0
-            for l in line.parnter_id.station_ids:
-                no += 1
-                l.sequence_ref = no
+    order = fields.Integer('Order')
 
 class ResTimeTable(models.Model):
     _name = "res.timetable"
@@ -121,7 +113,10 @@ class ResPartner(models.Model):
     def _compute_station_record(self):
         for record in self:
             compaute_station_ids = []
+            no = 0
             for st in record.station_ids:
+                no += 1
+                st.order = no
                 if st.terminus:
                     compaute_station_ids.append(st.station_id.id)
             record.compaute_station_ids = compaute_station_ids
