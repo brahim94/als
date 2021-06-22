@@ -5,7 +5,7 @@ import json
 import functools
 import logging
 from odoo.exceptions import AccessError
-
+from datetime import datetime
 from odoo import http
 from odoo.addons.api_restful_odoo.common import (
     extract_arguments,
@@ -180,7 +180,7 @@ class APIController(http.Controller):
 
     @validate_token
     @http.route(_routes, type="http", auth="none", methods=["POST"], csrf=False)
-    def post(self, model=None, id=None, **payload):
+    def post(self, model=None, method=None, id=None, **payload):
         """Create a new record.
         Basic sage:
         import requests
@@ -223,7 +223,7 @@ class APIController(http.Controller):
         model = request.env[self._model].search([("model", "=", model)], limit=1)
         values = {}
         fields = []
-        if model:
+        if model and not method:
             try:
                 # changing IDs from string to int.
                 for k, v in payload.items():
@@ -240,6 +240,65 @@ class APIController(http.Controller):
                     return valid_response(data)
                 else:
                     return valid_response(data)
+        if model and method:
+            try:
+                if method == 'set_client':
+                    data = []
+                    if not payload.get('code'):
+                        return invalid_response("Error",message='partner code is required')
+                    records = request.env[model.model].sudo().search([('partner_type','=','client'),('code','=', payload.get('code'))])
+                    if not records:
+                        payload.update({'partner_type':'client'})
+                        records = request.env[model.model].sudo().create(payload)
+                    if records:
+                        records.sudo().write(payload)
+                    data.append({'partner_id': records.id})
+
+                if method == 'order_card':
+                    data = []
+                    if not payload.get('client_code'):
+                        return invalid_response("Error",message='client code is required')
+                    if not payload.get('product_id'):
+                        return invalid_response("Error",message='product is required')
+                    records = request.env['res.partner'].sudo().search([('partner_type','=','client'),('code','=', payload.get('client_code'))])
+                    # if not records:
+                    #     records = request.env[model.model].sudo().create(payload)
+                    if records:
+                        records = request.env[model.model].sudo().create(
+                            {
+                                'partner_id': records.id,
+                                'date_order': datetime.today().strftime('%Y-%m-%d'),
+                                'order_line': [(0,0,{'product_id': int(payload.get('product_id'))})]
+                            }
+                        )
+                        data.append({'order_id': records.id})
+
+                if method == 'set_claim':
+                    data = []
+                    if not payload.get('client_code'):
+                        return invalid_response("Error",message='client code is required')
+                    if not payload.get('name'):
+                        return invalid_response("Error",message='subject is required')
+                    records = request.env['res.partner'].sudo().search([('partner_type','=','client'),('code','=', payload.get('client_code'))])
+                    # if not records:
+                    #     records = request.env[model.model].sudo().create(payload)
+                    if records:
+                        records = request.env[model.model].sudo().create({
+                            'date':payload.get('date'),
+                            'num_bus':payload.get('num_bus'),
+                            'code':payload.get('client_code'),
+                            'name':payload.get('name'),
+                            'line_id':payload.get('line_id'),
+                            'description':payload.get('description'),
+                            'is_called_back':payload.get('is_called_back'),
+                            'claim_type':payload.get('claim_type'),
+                            'categ_id':payload.get('claim_category'),
+                        })
+                        data.append({'order_id': records.id})
+                return valid_response(data)
+            except Exception as e:
+                request.env.cr.rollback()
+                return invalid_response("params", e)
         return invalid_response("invalid object model", "The model %s is not available in the registry." % ioc_name,)
 
     @validate_token

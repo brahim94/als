@@ -15,7 +15,7 @@
             </field>
             <field name="vat" position="after">
                 <field name="cin" attrs="{'invisible': [('partner_type', '!=', 'client')]}"/>
-                <field name="birthdate" attrs="{'invisible': [('partner_type', '!=', 'client')]}"/>
+                <field name="birthday" attrs="{'invisible': [('partner_type', '!=', 'client')]}"/>
                 <field name="gender" widget="radio" options="{'horizontal': true}" attrs="{'invisible': [('partner_type', '!=', 'client')]}"/>
             </field>
             <xpath expr="//page[@name='sales_purchases']" position="attributes">
@@ -37,9 +37,9 @@
                 <page name="legal_representative" string="Legal representative" attrs="{'invisible': [('partner_type', '!=', 'client')]}">
                     <group>
                         <group>
-                            <field name="res_name"/>
-                            <field name="res_cin"/>
-                            <field name="res_phone"/>
+                            <field name="rep_name"/>
+                            <field name="rep_cin"/>
+                            <field name="rep_phone"/>
                         </group>
                         <group></group>
                     </group>
