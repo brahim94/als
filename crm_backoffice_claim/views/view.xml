@@ -1,0 +1,180 @@
+<?xml version="1.0"?>
+<!-- Copyright 2018-2019 ForgeFlow, S.L.
+     License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl-3.0) -->
+<odoo>
+
+    <record id="crm.view_partners_form_crm1" model="ir.ui.view">
+        <field name="name">view.res.partner.form.crm.inherited1</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field eval="1" name="priority"/>
+        <field name="groups_id" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
+        <field name="arch" type="xml">
+            <data>
+                <div name="button_box" position="inside">
+                    <button class="oe_stat_button o_res_partner_tip_opp" type="action"
+                        name="%(crm.crm_lead_opportunities)d"
+                        icon="fa-star" invisible="1"
+                        groups="sales_team.group_sale_salesman"
+                        context="{'search_default_partner_id': active_id}">
+                        <field string="Opportunities" name="opportunity_count" widget="statinfo"/>
+                    </button>
+                    <button class="oe_stat_button" type="object"
+                        name="schedule_meeting"
+                        icon="fa-calendar" invisible="1"
+                        groups="sales_team.group_sale_salesman"
+                        context="{'partner_id': active_id, 'partner_name': name}">
+                        <field string="Meetings" name="meeting_count" widget="statinfo"/>
+                    </button>
+                </div>
+                <xpath expr="//label[@name='address_name']" position="replace">
+	                <label for="" name="address_name">
+                        <b attrs="{'invisible': [('type', '!=', 'contact')]}">Adresse</b>
+                        <b attrs="{'invisible': [('type', '!=', 'invoice')]}">Invoice Address</b>
+                        <b attrs="{'invisible': [('type', '!=', 'delivery')]}">Delivery Address</b>
+                        <b attrs="{'invisible': [('type', '!=', 'other')]}">Other Address</b>
+                        <b attrs="{'invisible': [('type', '!=', 'private')]}">Private Address</b>
+                        <b attrs="{'invisible': [('type', '!=', False)]}">Address</b>
+                    </label>
+	            </xpath>
+                
+                
+                
+                
+            </data>
+        </field>
+    </record>
+    
+    
+    <record id="sale.res_partner_view_buttons" model="ir.ui.view">
+        <field name="name">res.partner.view.buttons</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="priority" eval="3"/>
+        <field name="groups_id" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button class="oe_stat_button" type="action" name="%(sale.act_res_partner_2_sale_order)d" id="act_res_partner_2_sale_order"
+                    groups="sales_team.group_sale_salesman"
+                    invisible="not context.get('show_buttons')"
+                    icon="fa-usd">
+                    <field string=" Demandes Carte" name="sale_order_count" widget="statinfo"/>
+                </button>
+            </div>
+            <page name="internal_notes" position="inside">
+                <group colspan="2" col="2" groups="sale.group_warning_sale">
+                    <separator string="Warning on the Sales Order" colspan="4" />
+                        <field name="sale_warn" nolabel="1" />
+                        <field name="sale_warn_msg" colspan="3" nolabel="1"
+                                attrs="{'required':[('sale_warn', '!=', False), ('sale_warn','!=','no-message')],'readonly':[('sale_warn','=','no-message')]}"/>
+                </group>
+            </page>
+        </field>
+    </record>
+    
+    <record id="crm_claim.view_claim_res_partner_info_form" model="ir.ui.view">
+        <field name="name">res.partner.claim.info.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field
+            name="groups_id"
+            eval="[(4, ref('sales_team.group_sale_salesman')), (4, ref('base.group_partner_manager'))]"
+        />
+        <field name="priority" eval="50" />
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button
+                    class="oe_stat_button"
+                    type="action"
+                    context="{'search_default_partner_id': active_id, 'default_partner_id': active_id}"
+                    name="%(crm_claim.crm_claim_category_claim0)d"
+                    icon="fa-comments"
+                    invisible="not context.get('show_buttons')"
+                    groups="sales_team.group_sale_salesman"
+                    id = "crm_claim_category_claim0"
+                >
+                    <field string="Réclamations" name="claim_count" widget="statinfo" />
+                </button>
+            </div>
+        </field>
+    </record>
+    
+    
+	<record model="ir.ui.view" id="account.partner_view_buttons">
+        <field name="name">partner.view.buttons</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="priority" eval="11"/>
+        <field name="groups_id" eval="[(4, ref('account.group_account_invoice'))]"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button type="object" class="oe_stat_button" icon="fa-pencil-square-o" name="action_view_partner_invoices"
+                    context="{'default_partner_id': active_id}" invisible="1">
+                    <div class="o_form_field o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="total_invoiced" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                        </span>
+                        <span class="o_stat_text">Invoiced</span>
+                    </div>
+                </button>
+            </div>
+
+            <page name="internal_notes" position="inside">
+                <group colspan="2" col="2" groups="account.group_warning_account">
+                    <separator string="Warning on the Invoice" colspan="4"/>
+                    <field name="invoice_warn" nolabel="1" />
+                    <field name="invoice_warn_msg" colspan="3" nolabel="1"
+                            attrs="{'required':[('invoice_warn', '!=', False), ('invoice_warn','!=','no-message')],'readonly':[('invoice_warn','=','no-message')]}"/>
+                </group>
+            </page>
+        </field>
+    </record>
+    <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
+        <field name="name">Demandes reçues</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_id" ref="sale.view_quotation_tree_with_onboarding"/>
+        <field name="view_mode">tree,kanban,form,calendar,pivot,graph,activity</field>
+        <field name="search_view_id" ref="sale.sale_order_view_search_inherit_quotation"/>
+        <field name="context"></field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Create a new quotation, the first step of a new sale!
+          </p><p>
+            Once the quotation is confirmed by the customer, it becomes a sales order.<br/> You will be able to create an invoice and collect the payment.
+          </p>
+        </field>
+    </record>
+    
+    <record id="view_quotation_tree_french" model="ir.ui.view">
+        <field name="name">view.quotation.tree.french</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree"/>
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//field[@name='name']" position="replace">
+	                <field name="name" string="N° de demande" readonly="1"/>
+	            </xpath>
+            </data>
+        </field>
+    </record>
+    
+    <record id="sale.action_orders" model="ir.actions.act_window">
+        <field name="name">Demandes reçues</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">tree,kanban,form,calendar,pivot,graph,activity</field>
+        <field name="search_view_id" ref="sale.sale_order_view_search_inherit_sale"/>
+        <field name="context">{}</field>
+        <field name="domain">[('state', 'not in', ('draft', 'sent', 'cancel'))]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new quotation, the first step of a new sale!
+            </p><p>
+                Once the quotation is confirmed, it becomes a sales order.<br/> You will be able to create an invoice and collect the payment.
+            </p>
+        </field>
+    </record>
+    
+</odoo>
+

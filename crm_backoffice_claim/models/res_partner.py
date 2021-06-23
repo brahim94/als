@@ -1,4 +1,5 @@
 from odoo import api, fields, models
+from lxml import etree
 
 class ResMedia(models.Model):
     _name = "res.media"
@@ -120,3 +121,21 @@ class ResPartner(models.Model):
                 if st.terminus:
                     compaute_station_ids.append(st.station_id.id)
             record.compaute_station_ids = compaute_station_ids
+
+
+#     @api.model
+#     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
+#         print(self.env.context)
+#         res = super(ResPartner, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
+#         if view_type == 'form' and self.env.context.get('partner_type') and self.env.context.get('partner_type') == 'client':
+#             doc = etree.XML(res['arch'])
+#             for node in doc.xpath("//l[@id='act_res_partner_2_sale_order']"):
+#                 print(111111,node)
+#                 node.set('invisible', '1')
+#             res['arch'] = etree.tostring(doc, encoding='unicode')
+#         print()
+#         return res
+    
+    
+    
+    

@@ -135,7 +135,7 @@
     <record id="res_parnter_client" model="ir.actions.act_window">
         <field name="name">Clients</field>
         <field name="res_model">res.partner</field>
-        <field name="context">{'partner_type': 'client'}</field>
+        <field name="context">{'partner_type': 'client','show_buttons' : 'yes'}</field>
         <field name="domain">[('partner_type', '=', 'client')]</field>
         <field name="view_mode">kanban,tree,form,activity</field>
     </record>
@@ -161,9 +161,9 @@
         action="res_parnter_client"/>
 
     <record id="res_parnter_pos" model="ir.actions.act_window">
-        <field name="name">Point of Sales</field>
+        <field name="name">Points de vente</field>
         <field name="res_model">res.partner</field>
-        <field name="context">{'partner_type': 'pos'}</field>
+        <field name="context">{'partner_type': 'pos','show_pos_label' : 'yes'}</field>
         <field name="domain">[('partner_type', '=', 'pos')]</field>
         <field name="view_mode">kanban,tree,form,activity</field>
     </record>

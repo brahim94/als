@@ -11,12 +11,14 @@
     'website': 'https://www.mordantbs.com',
     'category': 'CRM',
     "summary": "Track your customers/vendors claims and grievances.",
-    "depends": ["crm_claim","base_geolocalize","sale_management","crm_claim_type"],
+    "depends": ["crm_claim","base_geolocalize","sale_management","crm_claim_type","sales_team"],
     "data": [
         "security/ir.model.access.csv",
         "views/res_partner_views.xml",
         "views/res_media_views.xml",
-        "views/crm_claims_views.xml"
+        "views/crm_claims_views.xml",
+        "views/menus.xml",
+        "views/view.xml"
     ],
     "installable": True,
 }

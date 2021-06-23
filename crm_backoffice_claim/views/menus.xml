@@ -1,0 +1,89 @@
+<?xml version="1.0" ?>
+<odoo>
+    <menuitem
+            id="crm.crm_menu_root"
+            name="BackOffice Alsa"
+            web_icon="crm,static/description/icon.png"
+            groups="sales_team.group_sale_salesman,sales_team.group_sale_manager"
+            sequence="6"/>
+    <menuitem id="sale.sale_menu_root"
+            name="Demandes de cartes"
+            web_icon="sale_management,static/description/icon.png"
+            sequence="7"
+            />
+    <menuitem
+            id="crm.crm_menu_sales"
+            name="Référentiels"
+            parent="crm.crm_menu_root"
+            sequence="1"/>
+   <menuitem
+            id="crm.menu_crm_opportunities"
+            action="crm.action_your_pipeline"
+            name="My Pipeline"
+            parent="crm.crm_menu_sales"
+            active="False"
+            sequence="1"/>
+   <menuitem
+        id="sale_crm.sale_order_menu_quotations_crm"
+        name="My Quotations"
+        action="sale.action_quotations"
+        parent="crm.crm_menu_sales"
+        active="False"
+        sequence="2"/>
+    <menuitem id="crm.sales_team_menu_team_pipeline"
+            name="Team Pipelines"
+            parent="crm.crm_menu_sales"
+            action="sales_team.crm_team_salesteams_pipelines_act"
+            active="False"
+            sequence="4"/>
+    <menuitem id="crm.res_partner_menu_customer"
+            name="Customers"
+            parent="crm.crm_menu_sales"
+            action="base.action_partner_form"
+            active="False"
+            sequence="5"/>
+    <menuitem
+        id="crm_claim.menu_aftersale"
+        name="Service Client"
+        groups="sales_team.group_sale_salesman"
+        parent="crm.crm_menu_root"
+        sequence="5"
+    />
+    <menuitem
+        name="Réclamation"
+        id="crm_claim.menu_crm_case_claims"
+        parent="crm_claim.menu_aftersale"
+        action="crm_claim.crm_claim_category_claim0"
+        sequence="1"
+    />
+    <menuitem id="sale.sale_order_menu"
+        name="Demandes"
+        parent="sale.sale_menu_root"
+        sequence="2"/>
+        
+    <menuitem id="sale.menu_sale_quotations"
+            action="sale.action_quotations_with_onboarding"
+            parent="sale.sale_order_menu"
+            sequence="1" groups="sales_team.group_sale_salesman"
+            name="Demandes reçues"
+            />
+    <menuitem id="sale.menu_sale_order"
+            name="Demandes traitées"
+            action="sale.action_orders"
+            parent="sale.sale_order_menu"
+            sequence="2" groups="sales_team.group_sale_salesman"/>
+   <menuitem id="sale.report_sales_team"
+            name="Sales Teams"
+            parent="sale.sale_order_menu"
+            groups="sales_team.group_sale_manager"
+            action="sales_team.crm_team_salesteams_act"
+            active="False"
+            sequence="3"/>
+    <menuitem id="sale.res_partner_menu"
+            parent="sale.sale_order_menu"
+            action="account.res_partner_action_customer"
+            active="False"
+            sequence="4" groups="sales_team.group_sale_salesman"/>
+
+
+</odoo>
